@@ -3,7 +3,7 @@
 ```rust
 fn f_mut_pedantic<'s>(&'s mut self) -> &'s mut Self {
     let captured_self = self as *mut Self;
-    unsafe { &mut *((*captured_self).f() as *const Self as *mut Self) }
+    unsafe { &mut *((&*captured_self).f() as *const Self as *mut Self) }
 }
 ```
 
@@ -17,4 +17,5 @@ again.
 
 ### Source
 
-https://github.com/rust-lang/rust/issues/30424#issuecomment-167009462
+- https://github.com/rust-lang/rust/issues/30424#issuecomment-167009462
+- https://github.com/rust-lang/rust/issues/30424#issuecomment-168539718
