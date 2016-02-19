@@ -1,6 +1,6 @@
 ### Example
 
-```
+```rust
 rust source code
 ```
 

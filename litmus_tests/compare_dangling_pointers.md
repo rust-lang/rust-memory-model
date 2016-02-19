@@ -1,6 +1,6 @@
 ### Example
 
-```
+```rust
 fn compare_dangling_pointers()
 {
     let p1: *const i32;

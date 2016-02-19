@@ -1,6 +1,6 @@
 ### Example
 
-```
+```rust
 fn f(&self) -> &Self { self }
 fn f_mut_unsure<'s>(&'s mut self) -> &'s mut Self {
     let ret = unsafe { transmute::<&Self, &'s mut Self>(self.f()) };

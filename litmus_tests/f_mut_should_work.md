@@ -1,6 +1,6 @@
 ### Example
 
-```
+```rust
 fn f(&self) -> &Self { self }
 fn f_mut_should_work<'s>(&'s mut self) -> &'s mut Self {
     let ret = unsafe { &mut *(self.f() as *const Self as *mut Self) };
