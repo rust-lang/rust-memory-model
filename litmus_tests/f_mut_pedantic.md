@@ -9,7 +9,11 @@ fn f_mut_pedantic<'s>(&'s mut self) -> &'s mut Self {
 
 ### Explanation
 
-More explicit variation on [f_mut_should_work.md](f_mut_should_work.md).
+More explicit variation on
+[f_mut_should_work.md](f_mut_should_work.md).  In particular, it's
+important that the `f()` method here returns `self`. The tricky part
+is that `self` is being converted from `&mut` to `&` and then back
+again.
 
 ### Source
 
