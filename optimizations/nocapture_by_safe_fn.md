@@ -50,16 +50,10 @@ can always assume that.
 - `escape_as_vec` -- variant on the previous case where it seems like
   we should be able to assume nocapture, even though the return type
   contains a `*const i32`.
-  
-nmatsakis notes: One possibility is that all of these examples *can
-be* legal, depending on the caller. That is, looking specifically as
-`escape_as_usize`, if the caller gets back a `usize` and transmutes it
-to a pointer which is then dereferenced, perhaps we can simply have
-very conservative rules on the caller because they have created a
-pointer with no known origin. However, this gets complicated if the
-caller passes the `usize` elsewhere without adding proper unsafe
-blocks; see the ["usize transfer"][ut] litmus test for an example of
-why.
+
+See also the the ["usize transfer"][ut] litmus test for further
+discussion, and in particular for examples that show the callers
+involved.
 
 [ut]: ../litmus_tests/usize_transfer.md
 
