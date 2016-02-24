@@ -38,7 +38,7 @@ that no alias of `x` escapes `foo`. However, it's not clear that we
 can always assume that.
 
 - `escape_simple` -- no capture would be appropriate.
-- `escape_as_newtype` -- same types as previous example, but in this case
+- `escape_as_usize` -- same types as previous example, but in this case
   one might imagine that the user expects to coerce the result back to
   a pointer and use it. Is that legal?
 - `escape_as_ptr` -- same as above, but they were more explicit in their types.
