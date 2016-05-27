@@ -13,12 +13,11 @@ impl [T] {
 
 ### Explanation
 
-it cheats the compiler by
-"duplicating" `self` using the unsafe function
-[`transmute_copy`][transmute_copy]. This means that both `self` and
-`copy` are `&mut [T]` slices pointing at the same memory, at the same
-time. In ordinary, safe Rust, this is impossible, but using
-`transmute_copy`, we can make it happen.
+it cheats the compiler by "duplicating" `self` using the unsafe
+function [`transmute_copy`][transmute_copy]. This means that both
+`self` and `copy` are `&mut [T]` slices pointing at the same memory,
+at the same time. In ordinary, safe Rust, this is impossible, but
+using `transmute_copy`, we can make it happen.
 
 The rest of the function looks almost the same as our original attempt
 at a safe implementation (also in the [previous post][pp]). The only
@@ -35,4 +34,4 @@ that `self` and `copy` are disjoint?
 
 ### Source
 
-Rust sources.
+Rust sources (this was how `split_at_mut` was originally written).
