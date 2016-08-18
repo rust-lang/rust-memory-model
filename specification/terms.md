@@ -1,5 +1,3 @@
-My version of the OP
-
 ## Statics
 
 ### Type
@@ -8,7 +6,7 @@ A rustc `Ty` - You should know what this is :-). Not to be confused with an LLVM
 
 ### Concrete Type
 
-A *type* without type parameters.
+A *type* without type parameters. The memory model concerns only *concrete types*.
 
 ### Location Expression (lexpr)
 
