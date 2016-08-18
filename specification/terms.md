@@ -1,44 +1,99 @@
-## Statics
+Some terms, defined by @ubsan and @arielb1. Please debate on them, or correct them, as you see fit :)
 
-### Type
+## §1 Types
 
-A rustc `Ty` - You should know what this is :-). Not to be confused with an LLVM type or anything else.
+A type is a construct in Rust which defines certain parameters, and which turns an array of bytes into a value.
 
-### Concrete Type
+A type may have type, lifetime, or (in the future) constant parameters. If any of these parameters are generic, then the type is a "generic type". Otherwise, the type is a "concrete type".
 
-A *type* without type parameters. The memory model concerns only *concrete types*.
+A type is any of the following:
 
-### Location Expression (lexpr)
+### §1.1 Primitives
+
+#### §1.1.1 Numeric types
+
+ * `u8`
+ * `u16`
+ * `u32`
+ * `u64`
+ * `usize`
+ * `i8`
+ * `i16`
+ * `i32`
+ * `i64`
+ * `isize`
+ * `f32`
+ * `f64`
+
+#### §1.1.2 Pointers
+
+ * `<T> *const T`
+ * `<T> *mut T`
+ * `<'a, T> &'a T`
+ * `<'a, T> &'a mut T`
+
+#### §1.1.3 Arrays
+
+`<T, const N: usize> [T; N]`
+
+#### §1.1.4 Slices
+
+ * `str`
+ * `<T> [T]`
+
+#### §1.1.5 Tuples
+
+ * `<T> (T,)`
+ * `<T, U> (T, U)`
+ ...
+
+#### §1.1.6 Function Pointers
+
+ * `fn()`
+ * `<T, U> fn(T) -> U`
+ ...
 
 
-A typed expression that evaluates to an *object*, as opposed to a *vexpr*. The LHS of an assignment and the scrutinee of a pattern are examples of *lexpr*s.
+### §1.2 `struct`s
 
-If a *vexpr* is used where an *lexpr* is expected (other than the LHS of an assignment, where
-using a *vexpr* is illegal), it is wrapped in an implicit *temporary lexpr*.
+(TODO)
 
-### Value Expression (vexpr)
+### §1.3 `enum`s
 
-A typed expression that evaluates to an *value*, as opposed to a *lexpr*. The RHS of an
-assignment and the arguments of a function are examples of *vexpr*s.
+(TODO)
 
-If a *lexpr* is used where an *vexpr* is expected, it is wrapped in an implicit
-*use vexpr*.
+## §2 Expressions
 
-### Temporary Lexpr
+### §2.1 Location Expressions (lexprs)
 
-```Rust
-    LExprKind::Temp(P<VExpr>)
-```
+A typed expression that evaluates to an object, as opposed to a value. The LHS of an assignment and the examinee of a pattern are examples of lexprs.
 
-A kind of implicit *lexpr* that wraps a *vexpr* when a *lexpr* is needed. When
- evaluated, it:
+If a vexpr is used where an lexpr is expected (other than the LHS of an assignment, where using a vexpr is illegal), it is wrapped in an implicit temporary lexpr, the rules of which are given in §2.3.
 
- * creates a temporary slot, scheduled for destruction at the end of the current *temporary scope*.
- * evaluates the *vexpr* and stores it within the slot.
- * evaluates into the temporary slot object.
+### §2.2 Value Expression (vexpr)
 
-A common example occurs when the result of `format!` is borrowed - it is wrapped by
-an implicit temporary lexpr.
+A typed expression that evaluates to an value, as opposed to an object. The RHS of an assignment and the arguments of a function are examples of vexprs.
+
+If a lexpr is used where an vexpr is expected, the memory is read from the object referred to by the lexpr to create a vexpr *if* either T: Copy, or the mutability of the lexpr allows for moving.
+
+### §2.3 Temporary lexpr
+
+An implicit lexpr that wraps a vexpr when an lexpr is expected.
+
+#### §2.3.1 The reference operator on the RHS of let statements
+(TODO: figure out the rule)
+
+This case only exists when, on the right hand side of a let statement, a reference operator (`&`, `&mut`) takes the address of a vexpr. I don't know the rule. ping @nikomatsakis to actually say the rule.
+
+#### §2.3.2 Other temporary lexprs
+
+ When evaluated, it:
+
+ * creates a temporary object, scheduled for destruction at the end of the statement.
+ * evaluates the vexpr and stores it within the object.
+ * evaluates the lexpr of the temporary object.
+
+A common example occurs when the result of `format!` is borrowed - it is wrapped by an implicit temporary lexpr.
 
 ```Rust
 fn send(message: &str) {
@@ -51,37 +106,27 @@ fn main() {
 }
 ```
 
-### Use Vexpr
+### §2.4 Note on the terms lvalue and rvalue
 
-```Rust
-    LExprKind::Use(P<LExpr>)
-```
+These terms aren't used in this document, because they are used in conflicting ways in various places. However, lvalue is equivalent to lexpr, while rvalue is equivalent to vexpr.
 
-A kind of implicit *vexpr* that wraps a *lexpr* when a *vexpr* is needed. When
-evaluated, it evaluates the *lexpr* and reads the *value* from the evaluated-to
-*object*.
+## §3 Objects
 
-If the expression's type does not implement `Copy`, the value is moved out of the
-read-from *object*, preventing further accesses.
+An object is an untyped, contiguous block of memory with a certain size and a certain alignment.
+ 
+### §3.1 Capabilities
 
-The read-from *object* must be aligned to `align_of::<T>()` or behavior is undefined.
+All objects are able to be read, but you may not write to all objects.
 
-As usual, all `size_of::<T>()` bytes of the *object* must be accessible and
-remain stable for the duration required by the aliasing rules.
+A lexpr associated with an object, as a vexpr, will evaluate to a value (see §4) that is equivalent to the memory of the object, interpreted as the type of the lexpr.
 
-### Lvalue, Rvalue
+A write to an object will set the memory of that object equivalent to the value of the write, without the interpretation of typing.
 
-These terms are banned because they are used in conflicting ways in various places.
+### §3.2 Allocation.
 
-## Dynamics
+An object may be allocated in one of three ways:
 
-### Object - Contiguous block of memory with a certain size and a certain alignment.
-
-Each object has the capability to read the memory.
-
-Not all objects have the capability of writing the memory.
-
-An object may be allocated in static memory:
+In static memory:
 
 ```rust
 static x: i32 = 0i32; // a static, read-only object of size >= 4, alignment >= 4
@@ -89,7 +134,7 @@ static mut x: i32 = 0i32; // a static, read-write object of size >= 4, alignment
 static x: AtomicI32 = 0i32; // a static, read-write object of size >= 4, alignment >= 4
 ```
 
-or on the stack:
+on the stack:
 
 ```rust
 let x: i32 = 0i32; // a stack, read-only object of size >= 4, alignment >= 4
@@ -103,12 +148,35 @@ let x: Box<i32> = Box::new(0i32); // a stack, read-only object pointing to a hea
                                   // read-write object of size >= 4, alignment >= 4
 ```
 
-A note:
+### §3.3 Note on types:
 
-Objects aren't typed. No, not even effective types ^-^
+Objects *are not* typed. No, not even effective types ^-^
 
-### Value - inhabitant of a type
+## §4 Value
 
-A *value* is the inhabitant of a type. *Value*s are purely mathematical objects and neither live in memory not form part of a program statement. However, datums may be partially `undef` (do we want that?).
+A value is a specific inhabitant of a type. Values are pure mathematical objects, and do not live in memory. They only exist to be stored in objects, and to be evaluated.
 
-Example values are `true: bool`, `[0, 0, 0, 0]: [u32; 4]`, `0xcccccccc: *const u32`, `the address of the local "foo": &u32`. `Some((4, 2)): Option<(u32, usize)>`.
+### §4.1 Examples
+
+```rust
+true
+[0, 0, 0, 0]
+0xcccccccc as *const u32
+{
+    let foo: u32 = 0;
+    &foo // <-
+}
+Some((4u32, 2usize))
+```
+
+### §4.2 Undef
+
+A special case of any value is "undef". Any type may take on the value "undef", excepting zero sized types. Evaluating an "undef" value from a lexpr is Undefined Behavior, unless one is reading undef bytes from memory into a struct's padding bytes. The act of storing "undef" is not UB, only reading from an lexpr.
+
+### §4.3 Conversion to Memory
+
+A value, in order to get stored into memory, must first undergo the process of transformation from pure mathematical object into a computer-friendly form. Memory shall be represented as a byte array. Integers will be converted to base-2, 2's complement; floats shall be converted to IEEE754; etc. Any padding shall take on the value "undef".
+
+### §4.4 Conversion from Memory
+
+Conversion from memory will be a conversion to memory, but in reverse, going from computer-friendly form to pure mathematical object.
