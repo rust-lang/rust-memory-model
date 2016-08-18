@@ -122,10 +122,14 @@ When evaluated, it:
     * evaluates the lexpr to an object
     * reads the value from that object and evaluates to it.
 
-If the expression's type does not implement `Copy`, the value is moved out of the
-object, preventing further accesses.
+If the value read is an `undef`, behavior is undefined unless the expression's
+type is an integer, in which case behavior is unspecified (FIXME: this is intended
+to allow reads from padding - what can we say here?).
 
 The read-from object must be aligned to `align_of::<T>()` or behavior is undefined.
+
+If the expression's type does not implement `Copy`, the value is moved out of the
+object, preventing further accesses.
 
 ### §2.5 Destruction scopes
 
@@ -211,7 +215,7 @@ Some((4u32, 2usize))
 
 ### §4.2 Undef
 
-A special case of any value is "undef". Any type may take on the value "undef", excepting zero sized types. Evaluating an "undef" value from a lexpr is Undefined Behavior, unless one is reading undef bytes from memory into a struct's padding bytes. The act of storing "undef" is not UB, only reading from an lexpr.
+A special case of any value is "undef". Any type may take on the value "undef", excepting zero sized types. The act of storing "undef" is not UB.
 
 ### §4.3 Conversion to Memory
 
