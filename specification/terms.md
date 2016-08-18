@@ -220,3 +220,33 @@ A value, in order to get stored into memory, must first undergo the process of t
 ### §4.4 Conversion from Memory
 
 Conversion from memory will be a conversion to memory, but in reverse, going from computer-friendly form to pure mathematical object.
+
+## §5 Memory
+
+### §5.1 Segmentation
+
+Rust works on a flat address space - addresses are numbers between
+`0` and `2^wordlen`. However, for semantic purposes, memory is divided into an
+hierarchy of segments, each of which describes a contiguous set of addresses.
+
+The addresses `0` and `2^wordlen-1` are not assigned to any segment. This prevents
+segments from wrapping around the end of address space.
+
+Coexisting segments may not overlap (unless one is the supersegment of another). However, segments may be added or removed at run-time, possibly through intrinsics that can be triggered from user code.
+
+Segments have an identity - removing a segment and creating another with the same address-set does not result in the same segment.
+
+During their lifetime, each stack allocation and global variable is contained within a single segment.
+
+NOTE: segments are used to represent LLVM objects, and *not* Rust borrowed pointers.
+
+Every stack allocation or global variable will contain only addresses for a single
+segment. There MAY exist intrinsics that subdivide segments.
+
+Every pointer or reference is associated with a segment. That segment follows
+the pointer as it is stored and loaded from memory, and through projections.
+
+Each of the `size_of::<T>()` bytes from the address of a reference to a type `T` must always be contained within that reference's segment.
+
+When a raw pointer to type `T` is accessed, each of the `size_of::<T>()` bytes from
+its address must be contained within its segment.
