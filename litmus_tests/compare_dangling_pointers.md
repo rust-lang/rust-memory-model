@@ -12,7 +12,7 @@ fn compare_dangling_pointers()
         let y = Box::new(0);
         let p2: *const _ = &*y;
         let b = p1 == p2;
-        println!("Are they equal? {} {}", b, b, p1 == p2);
+        println!("Are they equal? {} {}", b, p1 == p2);
     }
 }
 ```
