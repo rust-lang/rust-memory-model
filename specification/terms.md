@@ -1,7 +1,5 @@
 Some terms, defined by @ubsan and @arielb1. Please debate on them, or correct them, as you see fit :)
 
-For explicitness, some of the section contain ADT declarations. These ADT declarations use Rust syntax for familiarity, but all smart pointers have been removed for clarity.
-
 ## §1 Types
 
 A type is a construct in Rust which defines certain parameters, and which turns an array of bytes into a value.
@@ -87,9 +85,9 @@ vexpr, the rules of which are given in §2.3.
 
 ```
 Temp:
-    Γ ⊢ vexp VExpr
+    vexp VExpr
     --------------
-    Γ ⊢ Temp(vexp) LExpr
+    Temp(vexp) LExpr
 ```
 
 An implicit lexpr that wraps a vexpr when an lexpr is expected.
@@ -116,9 +114,9 @@ fn main() {
 
 ```
 Use:
-    Γ ⊢ vexp VExpr
+    vexp VExpr
     --------------
-    Γ ⊢ Use(vexp) LExpr
+    Use(vexp) LExpr
 ```
 
 An implicit vexpr that wraps a lexpr when a vexpr is expected.
@@ -151,7 +149,7 @@ All objects are able to be read, but you may not write to all objects.
 
 A `Use` vexpr, applied to a lexpr that evaluates to an object, will evaluate to a value (see §4) that is equivalent to the memory of the object, interpreted as the type of the vexpr.
 
-A write to an object will set the memory of that object equivalent to the value of the write, without the interpretation of typing. (XXX: padding on assignment).
+A write to an object will set the memory of that object equivalent to the value of the write. (XXX: padding on assignment).
 
 ### §3.2 Allocation.
 
@@ -178,17 +176,6 @@ For example:
 ```rust
 let x: i32 = 0i32; // a stack, read-only object of size >= 4, alignment >= 4
 // you get the point
-```
-
-### §3.2.3 Heap Allocations
-
-Each call to `Box::new` creates a heap allocation, which is valid until it is destroyed when the box is dropped.
-
-For example:
-
-```rust
-let x: Box<i32> = Box::new(0i32); // a stack, read-only object pointing to a heap,
-                                  // read-write object of size >= 4, alignment >= 4
 ```
 
 ### §3.3 Arenas
