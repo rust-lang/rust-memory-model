@@ -17,6 +17,7 @@ There are issues that describe numerous kinds of things, tagged with K- labels:
 - `K-Code-Example`: some code that may or may not be legal when evaluated against a particular model
 - `K-Optimization`: something the compiler may or may not be able to do when evaluated against a particular model
 - `K-Task`: something that we have to do, such as investigating certain things and creating new issues if necessary
+- `K-Related-Work`: a concise summary of some bit of related work, with links to learn more
 
 ### Files
 
