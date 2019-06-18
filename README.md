@@ -1,4 +1,4 @@
-This repository is deprecated and the content is being triaged to move to the
+This repository is **deprecated** and the content is being triaged to move to the
 new location.  For the current discussions and issues, please head to the
 [Unsafe Code Guidelines repository](https://github.com/rust-lang/unsafe-code-guidelines).
 
