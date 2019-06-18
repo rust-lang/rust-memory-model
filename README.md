@@ -1,3 +1,9 @@
+This repository is deprecated and the content is being triaged to move to the
+new location.  For the current discussions and issues, please head to the
+[Unsafe Code Guidelines repository](https://github.com/rust-lang/unsafe-code-guidelines).
+
+# OLD README
+
 This repository is intended to help us develop a coherent and clear
 set of "unsafe code guidelines" for Rust. The goal of these guidelines
 is to make it clear what kinds of actions unsafe can legally take
